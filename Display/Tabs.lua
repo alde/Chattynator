@@ -207,6 +207,18 @@ end
 
 function addonTable.Display.TabsBarMixin:GetFilter(tabData, tabTag)
   local func
+  -- Helper function to check if loot message is from current player
+  local function isOwnLoot(data)
+    local messageType = data.typeInfo.type
+    if (messageType == "LOOT" or messageType == "CURRENCY" or messageType == "MONEY") and tabData.ownLootOnly then
+      -- Only apply loot filtering if ownLootOnly is enabled
+      -- Check if message text starts with "Loot:" (indicating current player's loot)
+      -- vs messages that contain "looted:" (indicating other players' loot)
+      return data.text and (data.text:match("^Loot:") ~= nil or data.text:match("^You receive") ~= nil)
+    end
+    return true -- Non-loot messages or ownLootOnly disabled pass through normally
+  end
+
   if tabData.invert then
     func = function(data)
       return tabData.groups[data.typeInfo.type] ~= false and (data.typeInfo.tabTag == nil or data.typeInfo.tabTag == tabTag) and
@@ -215,14 +227,17 @@ function addonTable.Display.TabsBarMixin:GetFilter(tabData, tabTag)
         (tabData.channels[data.typeInfo.channel.name] == nil and data.typeInfo.channel.isDefault) or
         tabData.channels[data.typeInfo.channel.name]
       ) and ((data.typeInfo.type ~= "WHISPER" and data.typeInfo.type ~= "BN_WHISPER") or tabData.whispersTemp[data.typeInfo.player and data.typeInfo.player.name] ~= false)
+      and isOwnLoot(data)
       or (data.typeInfo.type == "ADDON" and tabData.groups["ADDON"] == false and tabData.addons[data.typeInfo.source] ~= false and (data.typeInfo.tabTag == nil or data.typeInfo.tabTag == tabTag))
     end
   else
     func = function(data)
-      return tabData.groups[data.typeInfo.type] and (data.typeInfo.tabTag == nil or data.typeInfo.tabTag == tabTag) or
+      local baseCondition = tabData.groups[data.typeInfo.type] and (data.typeInfo.tabTag == nil or data.typeInfo.tabTag == tabTag) or
         (data.typeInfo.type == "WHISPER" or data.typeInfo.type == "BN_WHISPER") and tabData.whispersTemp[data.typeInfo.player and data.typeInfo.player.name] or
         tabData.channels[data.typeInfo.channel and data.typeInfo.channel.name] or
         data.typeInfo.type == "ADDON" and not tabData.groups["ADDON"] and tabData.addons[data.typeInfo.source] and (data.typeInfo.tabTag == nil or data.typeInfo.tabTag == tabTag)
+
+      return baseCondition and isOwnLoot(data)
     end
   end
   if #tabData.filters > 0 then

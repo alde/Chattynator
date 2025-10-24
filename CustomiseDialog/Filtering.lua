@@ -106,6 +106,14 @@ function addonTable.CustomiseDialog.SetupTabFilters(parent)
   filtersHeader:SetPoint("TOP")
   table.insert(allFrames, filtersHeader)
 
+  -- Add 'Show only own loot' checkbox
+  local ownLootCheckbox = addonTable.CustomiseDialog.Components.GetCheckbox(container, addonTable.Locales.OWN_LOOT_ONLY, 28, function(state)
+    tab.ownLootOnly = state
+    addonTable.CallbackRegistry:TriggerEvent("RefreshStateChange", {[addonTable.Constants.RefreshReason.Tabs] = true})
+  end)
+  ownLootCheckbox:SetPoint("TOP", allFrames[#allFrames], "BOTTOM")
+  table.insert(allFrames, ownLootCheckbox)
+
   for _, entry in ipairs(addonTable.CustomiseDialog.TYPE_LAYOUT_ORDER) do
     local dropdown = addonTable.CustomiseDialog.Components.GetBasicDropdown(container, entry[1])
     dropdown:SetPoint("TOP", allFrames[#allFrames], "BOTTOM")
@@ -299,6 +307,8 @@ function addonTable.CustomiseDialog.SetupTabFilters(parent)
     local windows = addonTable.Config.Get(addonTable.Config.Options.WINDOWS)
     tab = windows[windowIndex].tabs[tabIndex]
     UpdateHeader()
+    -- Update the ownLootOnly checkbox state
+    ownLootCheckbox:SetValue(tab.ownLootOnly or false)
     for _, f in ipairs(allFrames) do
       if f.DropDown then
         f:SetValue()

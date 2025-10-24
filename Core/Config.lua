@@ -11,6 +11,7 @@ function addonTable.Config.GetEmptyTabConfig(name)
     backgroundColor = "1a1a1a", tabColor = "b5926c",
     whispersTemp = {}, filters = {},
     isTemporary = false,
+    ownLootOnly = false,
   }
 end
 
@@ -38,6 +39,9 @@ local settings = {
             ["PET_INFO"] = false,
             ["OPENING"] = false,
             ["VOICE_TEXT"] = false,
+            ["LOOT"] = true,
+            ["CURRENCY"] = true,
+            ["MONEY"] = true,
           },
           invert = true,
           channels = {}, backgroundColor = "1a1a1a", tabColor = "06a1ff",

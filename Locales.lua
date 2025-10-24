@@ -153,6 +153,7 @@ L["BACKGROUND_COLOR"] = "Background Color"
 L["TAB_COLOR"] = "Tab Color"
 
 L["MESSAGE_TYPES"] = "Message types"
+L["OWN_LOOT_ONLY"] = "Show only own loot"
 L["NONE_SELECTED"] = "None Selected"
 L["REWARDS"] = "Rewards"
 L["WINDOW_X"] = "Window %s"
